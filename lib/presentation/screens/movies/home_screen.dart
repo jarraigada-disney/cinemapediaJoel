@@ -56,7 +56,8 @@ class _HomeBodyView extends StatelessWidget {
         MovieHorizontalListview(
           movies: movies,
           title: 'En cines',
-          subtitle: 'Hoy',),
+          subtitle: 'Hoy',
+          loadNextPage: () {print('Llamado del padre');},),
          ],
     );
   }

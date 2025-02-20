@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../../../domain/entities/movie.dart';
 
-class MovieHorizontalListview extends StatelessWidget {
+class MovieHorizontalListview extends StatefulWidget {
   final List<Movie> movies;
   final String? title;
   final String? subtitle;
@@ -17,23 +17,44 @@ class MovieHorizontalListview extends StatelessWidget {
       this.loadNextPage});
 
   @override
+  State<MovieHorizontalListview> createState() => _MovieHorizontalListviewState();
+}
+
+class _MovieHorizontalListviewState extends State<MovieHorizontalListview> {
+
+  final scrolController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+
+    scrolController.addListener((){
+      if(widget.loadNextPage ==null ) return;
+
+      if((scrolController.position.pixels +200)  >= scrolController.position.maxScrollExtent)
+        print('Load next Movies');
+        widget.loadNextPage!();
+    });
+  }
+  @override
   Widget build(BuildContext context) {
     return SizedBox(
       height: 350,
       child: Column(
         children: [
-          if (title != null || subtitle != null)
+          if (widget.title != null || widget.subtitle != null)
             _Title(
-              title: title,
-              subitle: subtitle,
+              title: widget.title,
+              subitle: widget.subtitle,
             ),
           Expanded(
               child: ListView.builder(
-                  itemCount: movies.length,
+                  controller: ScrollController(),
+                  itemCount: widget.movies.length,
                   scrollDirection: Axis.horizontal,
                   physics: const BouncingScrollPhysics(),
                   itemBuilder: (context, index) {
-                    return _Slide(movie: movies[index]);
+                    return _Slide(movie: widget.movies[index]);
                   }))
         ],
       ),
