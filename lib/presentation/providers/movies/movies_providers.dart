@@ -3,7 +3,7 @@ import 'package:cinemapedia/domain/repositories/movies_repository.dart';
 import 'package:cinemapedia/presentation/providers/movies/movies_repository_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class MovieController extends AsyncNotifier<List<Movie>> {
+class MovieController extends AutoDisposeAsyncNotifier<List<Movie>> {
 
   late MoviesRepository repository;
   var currentPage = 0;
@@ -28,12 +28,11 @@ class MovieController extends AsyncNotifier<List<Movie>> {
       final List<Movie> movies = await fetchMoreMovies(currentPage);
       state = AsyncValue.data(movies);
     } catch (e, stackTrace) {
-      AsyncValue.error(e, stackTrace);
+      state = AsyncValue.error(e, stackTrace);
     }
   }
 }
 
-final movieControllerProvider =
-    AsyncNotifierProvider<MovieController, List<Movie>>(() {
+final movieControllerProvider =AsyncNotifierProvider.autoDispose<MovieController, List<Movie>>(() {
   return MovieController();
 });
