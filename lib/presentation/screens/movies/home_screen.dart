@@ -1,9 +1,10 @@
-import 'package:cinemapedia/domain/entities/movie.dart';
-import 'package:cinemapedia/presentation/providers/movies/movies_providers.dart';
-import 'package:cinemapedia/presentation/providers/movies/movies_slideshow_provider.dart';
-import 'package:cinemapedia/presentation/widgets/widgets.dart';
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import 'package:cinemapedia/domain/entities/movie.dart';
+import 'package:cinemapedia/presentation/providers/movies/movies_providers.dart';
+import 'package:cinemapedia/presentation/widgets/widgets.dart';
 
 class HomeScreen extends StatelessWidget {
   static const name = 'home_screen';
@@ -13,9 +14,9 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Center(
-      child: _HomeView(),
-    ));
+      body: _HomeView(),
+      bottomNavigationBar: CustomBottomNavBar(),
+    );
   }
 }
 
@@ -27,29 +28,36 @@ class _HomeView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final nowPlayingMovies = ref.watch(movieControllerProvider);
-    //final slideShowMovies = ref.watch(movieSlideshowProvider); 
-    return nowPlayingMovies.when(
-      data: (data) => _movieList(nowPlayingMovies: data.sublist(12,19)),
-      error: (error, stackTrace) => Center(
-        child: Text('Error: $error'),
-      ),
-      loading: () => CircularProgressIndicator(),
-    );
+    return Column(children: [
+      CustomAppbar(),
+      nowPlayingMovies.when(
+        data: (data) => _HomeBodyView(movies: data),
+        error: (error, stackTrace) => Center(
+          child: Text('Error: $error'),
+        ),
+        loading: () => Center(child: CircularProgressIndicator()),
+      )
+    ]);
   }
 }
 
-class _movieList extends StatelessWidget {
-  const _movieList({super.key, required this.nowPlayingMovies});
-
-  final List<Movie> nowPlayingMovies;
+class _HomeBodyView extends StatelessWidget {
+  final List<Movie> movies;
+  const _HomeBodyView({
+    Key? key,
+    required this.movies,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        CustomAppbar(),
-        MoviesSlideshow(movies: nowPlayingMovies),
-      ],
+        MoviesSlideshow( movies: movies.sublist(12, 19)),
+        MovieHorizontalListview(
+          movies: movies,
+          title: 'En cines',
+          subtitle: 'Hoy',),
+         ],
     );
   }
 }
