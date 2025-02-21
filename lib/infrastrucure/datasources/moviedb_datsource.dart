@@ -15,12 +15,17 @@ class MoviedbDatsource extends MoviesDatasource{
       'api_key': Environment.theMovieDbKey,
       'language': 'en-US'
     } 
-    ));
+    ) 
+    );
 
   @override
   Future<List<Movie>> getNowPlaying({int page = 1}) async{
   
-    final response = await dio.get('/movie/now_playing');
+    final response = await dio.get('/movie/now_playing',
+    queryParameters: {
+      'page' :page
+      }
+      );
 
     final movieDbResponse = MovieDbResponse.fromJson(response.data); // Recibo el Json
 

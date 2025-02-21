@@ -17,25 +17,36 @@ class MovieHorizontalListview extends StatefulWidget {
       this.loadNextPage});
 
   @override
-  State<MovieHorizontalListview> createState() => _MovieHorizontalListviewState();
+  State<MovieHorizontalListview> createState() =>
+      _MovieHorizontalListviewState();
 }
 
 class _MovieHorizontalListviewState extends State<MovieHorizontalListview> {
-
   final scrolController = ScrollController();
 
   @override
   void initState() {
     super.initState();
 
-    scrolController.addListener((){
-      if(widget.loadNextPage ==null ) return;
-
-      if((scrolController.position.pixels +200)  >= scrolController.position.maxScrollExtent)
-        print('Load next Movies');
-        widget.loadNextPage!();
-    });
+    scrolController.addListener(() {
+      if (widget.loadNextPage == null)
+        return;
+        if ((scrolController.position.pixels + 200) >=
+            scrolController.position.maxScrollExtent) {
+          
+          widget.loadNextPage!();
+          print('Load next Movies'); 
+        }
+      }
+    );
   }
+
+  @override
+  void dispose() {
+    scrolController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -49,7 +60,7 @@ class _MovieHorizontalListviewState extends State<MovieHorizontalListview> {
             ),
           Expanded(
               child: ListView.builder(
-                  controller: ScrollController(),
+                  controller: scrolController,
                   itemCount: widget.movies.length,
                   scrollDirection: Axis.horizontal,
                   physics: const BouncingScrollPhysics(),
@@ -84,13 +95,14 @@ class _Slide extends StatelessWidget {
                 fit: BoxFit.cover,
                 width: 150,
                 loadingBuilder: (context, child, loadingProgress) {
-                  if (loadingProgress != null)
+                  if (loadingProgress != null) {
                     return Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Center(
                           child:
                               const CircularProgressIndicator(strokeWidth: 2)),
                     );
+                  }
                   return FadeIn(child: child);
                 },
               ),
@@ -113,7 +125,10 @@ class _Slide extends StatelessWidget {
               Text('${movie.voteAverage}',
                   style: textStyles.bodyMedium?.copyWith(color: Colors.amber)),
               const SizedBox(width: 10),
-              Text('${movie.popularity}',style:textStyles.bodySmall,)
+              Text(
+                '${movie.popularity}',
+                style: textStyles.bodySmall,
+              )
             ],
           )
         ],

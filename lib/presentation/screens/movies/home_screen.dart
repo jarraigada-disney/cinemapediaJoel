@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cinemapedia/domain/entities/movie.dart';
 import 'package:cinemapedia/presentation/providers/movies/movies_providers.dart';
 import 'package:cinemapedia/presentation/widgets/widgets.dart';
+import 'package:cinemapedia/presentation/providers/movies/movies_providers.dart';
 
 class HomeScreen extends StatelessWidget {
   static const name = 'home_screen';
@@ -27,38 +28,62 @@ class _HomeView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+
+
     final nowPlayingMovies = ref.watch(movieControllerProvider);
-    return Column(children: [
+
+
+
+
+    return Column(
+      children: [
+        
       CustomAppbar(),
       nowPlayingMovies.when(
-        data: (data) => _HomeBodyView(movies: data),
+        data: (data) => _HomeBodyView(movies: data,ref: ref,),
         error: (error, stackTrace) => Center(
           child: Text('Error: $error'),
         ),
         loading: () => Center(child: CircularProgressIndicator()),
-      )
+      ),
     ]);
   }
 }
 
-class _HomeBodyView extends StatelessWidget {
+class _HomeBodyView extends ConsumerWidget {
   final List<Movie> movies;
+  final WidgetRef ref;
   const _HomeBodyView({
-    Key? key,
     required this.movies,
-  }) : super(key: key);
+    required this.ref
+  });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context,ref) {
+    
     return Column(
       children: [
-        MoviesSlideshow( movies: movies.sublist(12, 19)),
+
+
+        
+        MoviesSlideshow(movies: movies.sublist(12, 19)),
+
+
+
         MovieHorizontalListview(
           movies: movies,
           title: 'En cines',
           subtitle: 'Hoy',
-          loadNextPage: () {print('Llamado del padre');},),
-         ],
+          loadNextPage: () {
+            print('llamado padre');
+            ref.read(movieControllerProvider.notifier).loadNextPage();
+          },
+        )
+
+
+
+        
+      ],
     );
   }
 }
