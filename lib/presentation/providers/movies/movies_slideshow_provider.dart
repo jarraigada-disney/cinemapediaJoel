@@ -6,7 +6,7 @@ import '../../../domain/entities/movie.dart';
 //innecesario, solo para limitar desde aca la cantidad de peliculas
 
 final movieSlideshowProvider = Provider.autoDispose<List<Movie>>((ref) {
-  final movieState = ref.watch(movieControllerProvider);
+  final movieState = ref.watch(nowPlayingMoviesProvider);
   return movieState.when(
     data: (movies){
       return movies.isEmpty? []:movies.sublist(12,19);

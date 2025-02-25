@@ -1,17 +1,19 @@
+import 'dart:async';
+
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 
 import '../../../domain/entities/movie.dart';
 
 class MovieHorizontalListview extends StatefulWidget {
-  final List<Movie> movies;
+  final List<Movie> initialMovies;
   final String? title;
   final String? subtitle;
-  final VoidCallback? loadNextPage;
+   final Future<void> Function()? loadNextPage;
 
-  const MovieHorizontalListview(
+  MovieHorizontalListview(
       {super.key,
-      required this.movies,
+      required this.initialMovies,
       this.title,
       this.subtitle,
       this.loadNextPage});
@@ -22,33 +24,41 @@ class MovieHorizontalListview extends StatefulWidget {
 }
 
 class _MovieHorizontalListviewState extends State<MovieHorizontalListview> {
-  final scrolController = ScrollController();
 
+
+  final scrollController = ScrollController();
+  bool isLoadingNextPage = false;
+  Timer? debounceTimer;
   @override
-  void initState() {
+  void initState() { 
     super.initState();
+    
+    scrollController.addListener(() {
+        if (widget.loadNextPage == null) return;
 
-    scrolController.addListener(() {
-      if (widget.loadNextPage == null)
-        return;
-        if ((scrolController.position.pixels + 200) >=
-            scrolController.position.maxScrollExtent) {
-          
-          widget.loadNextPage!();
-          print('Load next Movies'); 
+        if ((scrollController.position.pixels + 200) >= scrollController.position.maxScrollExtent) {
+
+            if (debounceTimer?.isActive ?? false) debounceTimer!.cancel();//Why was it excecuting multiple times?
+
+            debounceTimer = Timer(const Duration(milliseconds: 40), () {
+                isLoadingNextPage = true; 
+                widget.loadNextPage!();
+            });
         }
-      }
-    );
-  }
+    });
+}
 
   @override
   void dispose() {
-    scrolController.dispose();
+    scrollController.dispose(); 
+    debounceTimer?.cancel(); 
     super.dispose();
   }
 
+
   @override
   Widget build(BuildContext context) {
+
     return SizedBox(
       height: 350,
       child: Column(
@@ -60,12 +70,12 @@ class _MovieHorizontalListviewState extends State<MovieHorizontalListview> {
             ),
           Expanded(
               child: ListView.builder(
-                  controller: scrolController,
-                  itemCount: widget.movies.length,
-                  scrollDirection: Axis.horizontal,
+                  controller: scrollController,
+                  itemCount: widget.initialMovies.length,
                   physics: const BouncingScrollPhysics(),
+                  scrollDirection: Axis.horizontal,
                   itemBuilder: (context, index) {
-                    return _Slide(movie: widget.movies[index]);
+                    return _Slide(movie: widget.initialMovies[index]);
                   }))
         ],
       ),
