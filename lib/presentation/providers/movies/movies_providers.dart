@@ -3,7 +3,7 @@ import 'package:cinemapedia/presentation/providers/providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 
-final fetchMoviesProvider = Provider<FetchMoviesProvider>((ref) {
+final fetchMoviesProvider = Provider.family<FetchMoviesProvider,MovieType>((ref,movieType) {
   final movieRepository = ref.watch(movieRepositoryProvider);
 
   return FetchMoviesProvider(
@@ -21,7 +21,7 @@ class MovieController extends AutoDisposeAsyncNotifier<List<Movie>> {
 
   @override
   Future<List<Movie>> build() {
-    final fetchMovies = ref.watch(fetchMoviesProvider);
+    final fetchMovies = ref.watch(fetchMoviesProvider(movieType));
     return fetchMovies.fetchMovies(movieType, page: currentPage);
   }
 
@@ -32,7 +32,7 @@ class MovieController extends AutoDisposeAsyncNotifier<List<Movie>> {
     print('loading more');
     currentPage++;
 
-    final fetchMovies = ref.watch(fetchMoviesProvider);
+    final fetchMovies = ref.watch(fetchMoviesProvider(movieType));
     final newMovies = await fetchMovies.fetchMovies(movieType, page: currentPage);
 
     state = AsyncValue.data([...state.value!, ...newMovies]);
@@ -60,70 +60,4 @@ final topRatedMoviesProvider = AsyncNotifierProvider.autoDispose<MovieController
 final upcomingMoviesProvider = AsyncNotifierProvider.autoDispose<MovieController, List<Movie>>(() {
   return MovieController(movieType: MovieType.upcoming);
 });
-
-
-
-// class MovieController extends AutoDisposeAsyncNotifier<List<Movie>> {
-//   var currentPage = 1;
-//   bool isLoadingMore = false;
-//   late MovieFetchFunction fetchMovies;
-//   final MovieType movieType;
-
-//   MovieController({required this.movieType});
-
-//   @override
-//   Future<List<Movie>> build() {
-//     return _initData();
-//   }
-
-//   Future<List<Movie>> _initData(MoviesRepository repository) async {
-//     return await fetchMovies(repository,currentPage);
-//   }
-
-//   Future<void> loadNextPage() async {
-//     if (isLoadingMore) return;
-
-//     isLoadingMore = true;
-//     print('loading more');
-//     currentPage++;
-//     final repository = ref.watch(movieRepositoryProvider);
-//     final newMovies = await fetchMovies(repository,currentPage);
-//     state = AsyncValue.data([...state.value!, ...newMovies]);
-//     await Future.delayed(const Duration(milliseconds: 200));
-//     isLoadingMore = false;
-//   }
-
-// }
-
-
-
-
-
-
-// final nowPlayingMoviesProvider = 
-//   AsyncNotifierProvider.autoDispose<MovieController, List<Movie>>(() {
-//   return MovieController(fetchNowPlayingMovies);
-// });
-
-// final popularMoviesProvider = 
-//   AsyncNotifierProvider.autoDispose<MovieController, List<Movie>>(() {
-//   return MovieController(fetchPopularMovies);
-// });
-
-
-// final topRatedMoviesProvider =
-//   AsyncNotifierProvider.autoDispose<MovieController, List<Movie>>(() {
-//   return MovieController(fetchTopRatedMovies);
-// });
-
-// final UpcomingMoviesProvider =
-//   AsyncNotifierProvider.autoDispose<MovieController, List<Movie>>(() {
-//   return MovieController(fetchUpcomingMovies);
-// });
-
-
-
-
-
-
 
