@@ -1,7 +1,7 @@
+import 'package:cinemapedia/domain/entities/movie.dart';
 import 'package:cinemapedia/presentation/providers/providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:cinemapedia/presentation/providers/movies/movies_providers.dart';
 import 'package:cinemapedia/presentation/widgets/widgets.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -25,6 +25,15 @@ class _HomeView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+
+    final initialLoading = ref.watch(initialLoadingProvider);
+
+    if (initialLoading) return FullScreenLoader();
+
+    final nowPlayingMovies = ref.watch(nowPlayingMoviesProvider);
+    final popularMovies = ref.watch(popularMoviesProvider);
+    final upcomingMovies = ref.watch(upcomingMoviesProvider);
+    final topRatedMovies = ref.watch(topRatedMoviesProvider);
     
 
     return CustomScrollView(
@@ -39,10 +48,10 @@ class _HomeView extends ConsumerWidget {
             delegate: SliverChildBuilderDelegate((context, index) {
           return Column(
             children: [
-            NowPlayingMoviesScrollAndSlide(),
-            PopularMoviesScroll(),
-            TopRatedMoviesScroll(),
-            UpcomingMoviesScroll()
+            NowPlayingMoviesScrollAndSlide(nowPlayingMovies),
+            PopularMoviesScroll(popularMovies),
+            TopRatedMoviesScroll(upcomingMovies),
+            UpcomingMoviesScroll(topRatedMovies)
           ]);
         }, childCount: 1))
       ],
@@ -51,7 +60,11 @@ class _HomeView extends ConsumerWidget {
   }
 
   class PopularMoviesScroll extends ConsumerWidget{
-    const PopularMoviesScroll({super.key});
+  final AsyncValue<List<Movie>> popularMovies;
+  
+    const PopularMoviesScroll(this.popularMovies,{super.key});
+
+    
     @override
     Widget build (BuildContext context, WidgetRef ref){
     final popularMovies = ref.watch(popularMoviesProvider);
@@ -73,7 +86,9 @@ class _HomeView extends ConsumerWidget {
 }
 
  class UpcomingMoviesScroll extends ConsumerWidget{
-    const UpcomingMoviesScroll({super.key});
+    final AsyncValue<List<Movie>> upcomingMovies;
+  
+    const UpcomingMoviesScroll(this.upcomingMovies,{super.key});
     @override
     Widget build (BuildContext context, WidgetRef ref){
    final upcomingMovies = ref.watch(upcomingMoviesProvider);
@@ -95,7 +110,9 @@ class _HomeView extends ConsumerWidget {
 }
 
 class TopRatedMoviesScroll extends ConsumerWidget{
-    const TopRatedMoviesScroll({super.key});
+    final AsyncValue<List<Movie>> topRatedMovies;
+  
+    const TopRatedMoviesScroll(this.topRatedMovies,{super.key});
     @override
     Widget build (BuildContext context, WidgetRef ref){
     final topRatedMovies = ref.watch(topRatedMoviesProvider);
@@ -117,10 +134,11 @@ class TopRatedMoviesScroll extends ConsumerWidget{
 }
 
 class NowPlayingMoviesScrollAndSlide extends ConsumerWidget{
-    const NowPlayingMoviesScrollAndSlide({super.key});
+    const NowPlayingMoviesScrollAndSlide(this.nowPlayingMovies , {super.key});
+
+    final AsyncValue<List<Movie>> nowPlayingMovies;
     @override
     Widget build (BuildContext context, WidgetRef ref){
-    final nowPlayingMovies = ref.watch(nowPlayingMoviesProvider);
     final nowPlayingMoviesNotifier = ref.watch(nowPlayingMoviesProvider.notifier);
     return  nowPlayingMovies.when(
               data: (data) => 
@@ -143,29 +161,3 @@ class NowPlayingMoviesScrollAndSlide extends ConsumerWidget{
             );
   }
 }
-
-// class _HomeBodyView extends ConsumerWidget {
-//   final List<Movie> movies;
-//   final WidgetRef ref;
-//   const _HomeBodyView({required this.movies, required this.ref});
-
-//   @override
-//   Widget build(BuildContext context, ref) {
-//     final nowPlayingMovies = ref.watch(nowPlayingMoviesProvider);
-//     final nowPlayingMoviesNotifier = ref.watch(nowPlayingMoviesProvider.notifier);
-
-//     return Column(
-//       children: [
-//         MoviesSlideshow(movies: movies.sublist(0, 7)),
-//         MovieHorizontalListview(
-//                   initialMovies: movies,
-//                   title: 'Top Rated ',
-//                   subtitle: 'All time',
-//                   loadNextPage: () {
-//                     return nowPlayingMoviesNotifier.loadNextPage();
-//                   })
-//       ],
-//     );
-//   }
-// }
-  
