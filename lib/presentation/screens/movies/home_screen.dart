@@ -49,8 +49,8 @@ class _HomeView extends ConsumerWidget {
           return Column(
             children: [
             NowPlayingMoviesScrollAndSlide(nowPlayingMovies),
-            PopularMoviesScroll(popularMovies),
             TopRatedMoviesScroll(upcomingMovies),
+            PopularMoviesScroll(popularMovies),
             UpcomingMoviesScroll(topRatedMovies)
           ]);
         }, childCount: 1))
@@ -147,8 +147,8 @@ class NowPlayingMoviesScrollAndSlide extends ConsumerWidget{
         MoviesSlideshow(movies: data.sublist(0, 7)),
         MovieHorizontalListview(
                   initialMovies: data,
-                  title: 'Top Rated ',
-                  subtitle: 'All time',
+                  title: 'Now playing ',
+                  subtitle: 'Today',
                   loadNextPage: () {
                     return nowPlayingMoviesNotifier.loadNextPage();
                   })
