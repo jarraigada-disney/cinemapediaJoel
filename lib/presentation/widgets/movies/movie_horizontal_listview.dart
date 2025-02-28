@@ -1,7 +1,9 @@
 import 'dart:async';
 
 import 'package:animate_do/animate_do.dart';
+import 'package:cinemapedia/config/helpers/human_formats.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../domain/entities/movie.dart';
 
@@ -113,7 +115,9 @@ class _Slide extends StatelessWidget {
                               const CircularProgressIndicator(strokeWidth: 2)),
                     );
                   }
-                  return FadeIn(child: child);
+                  return GestureDetector(
+                    onTap: ()=> context.push('/movie/${movie.id}'), //Navegacion con parametro
+                    child: FadeIn(child: child));
                 },
               ),
             ),
@@ -132,11 +136,11 @@ class _Slide extends StatelessWidget {
                 color: Colors.amber,
               ),
               const SizedBox(width: 3),
-              Text('${movie.voteAverage}',
+              Text('${HumanFormats.number(movie.voteAverage,1)}',
                   style: textStyles.bodyMedium?.copyWith(color: Colors.amber)),
               const SizedBox(width: 10),
               Text(
-                '${movie.popularity}',
+                '${HumanFormats.number(movie.popularity)}',
                 style: textStyles.bodySmall,
               )
             ],
