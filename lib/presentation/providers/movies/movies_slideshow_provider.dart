@@ -9,7 +9,7 @@ final movieSlideshowProvider = Provider.autoDispose<List<Movie>>((ref) {
   final movieState = ref.watch(nowPlayingMoviesProvider);
   return movieState.when(
     data: (movies){
-      return movies.isEmpty? []:movies.sublist(12,19);
+      return movies.isEmpty? []:movies.sublist(2,7);
     },
     error: (error, stackTrace)=> [],
     loading: ()=>[]);

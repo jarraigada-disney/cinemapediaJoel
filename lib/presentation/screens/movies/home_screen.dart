@@ -144,7 +144,7 @@ class NowPlayingMoviesScrollAndSlide extends ConsumerWidget{
               data: (data) => 
               Column(
       children: [
-        MoviesSlideshow(movies: data.sublist(0, 7)),
+        MoviesSlideshow(movies: data.sublist(15,20)),
         MovieHorizontalListview(
                   initialMovies: data,
                   title: 'Now playing ',
