@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 import 'package:cinemapedia/domain/entities/movie.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
+import 'package:go_router/go_router.dart';
 
 class MoviesSlideshow extends ConsumerWidget {
   final List<Movie> movies;
@@ -12,7 +12,7 @@ class MoviesSlideshow extends ConsumerWidget {
   const MoviesSlideshow({super.key, required this.movies});
 
   @override
-  Widget build(BuildContext context,WidgetRef ref) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final colors = Theme.of(context).colorScheme;
     return SizedBox(
       height: 210,
@@ -22,11 +22,8 @@ class MoviesSlideshow extends ConsumerWidget {
           scale: 0.9,
           autoplay: true,
           pagination: SwiperPagination(
-            margin: const EdgeInsets.only(top: 0),
-            builder: DotSwiperPaginationBuilder(
-            color: colors.secondary 
-            )
-          ),
+              margin: const EdgeInsets.only(top: 0),
+              builder: DotSwiperPaginationBuilder(color: colors.secondary)),
           itemCount: movies.length,
           itemBuilder: (context, index) => _Slide(movie: movies[index])),
     );
@@ -53,17 +50,17 @@ class _Slide extends StatelessWidget {
           decoration: decoration,
           child: ClipRRect(
             borderRadius: BorderRadius.circular(20),
-            child: Image.network(
-              movie.backdropPath,
-              fit: BoxFit.cover,
-              loadingBuilder: (context, child, loadingProgress) {
-                return loadingProgress != null
-                    ? Center(child: CircularProgressIndicator())
-                    : FadeIn(child: child);
-              },
-            ),
-          )
-          ),
+            child: Image.network(movie.backdropPath, fit: BoxFit.cover,
+                loadingBuilder: (context, child, loadingProgress) {
+              if (loadingProgress != null) {
+                return Center(child: CircularProgressIndicator());
+              }
+
+              return GestureDetector(
+                  onTap: () => context.push('/movie/${movie.id}'), //Navegacion con parametro
+                  child: FadeIn(child: child));
+            }),
+          )),
     );
   }
 }
